@@ -1,8 +1,5 @@
 package uk.co.stevebosman.angles
 
-import uk.co.stevebosman.angles.uk.co.stevebosman.angles.degToRad
-import uk.co.stevebosman.angles.uk.co.stevebosman.angles.radToDeg
-
 class Angle private constructor(val radians:Double, val degrees:Double) {
     operator fun unaryMinus(): Angle {
         return Angle(-radians, -degrees)

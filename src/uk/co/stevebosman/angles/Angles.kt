@@ -1,6 +1,5 @@
-package uk.co.stevebosman.angles.uk.co.stevebosman.angles
+package uk.co.stevebosman.angles
 
-import uk.co.stevebosman.angles.Angle
 import kotlin.math.PI
 
 
