@@ -1,0 +1,4 @@
+rootProject.name = 'Angles'
+
+
+enableFeaturePreview('GRADLE_METADATA')

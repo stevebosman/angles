@@ -89,8 +89,9 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
      * If [start] is supplied with [startInclusive] true it simplifies in the range [start, start + 2π).
      *
      * If [startInclusive] is false then the range is (start, start + 2π].
-     * @sample uk.co.stevebosman.angles.AngleTest.simplifyDegrees
-     * @sample uk.co.stevebosman.angles.AngleTest.simplifyRadiansSplit2
+     * @sample uk.co.stevebosman.angles.simplifyExample1
+     * @sample uk.co.stevebosman.angles.simplifyExample2
+     * @sample uk.co.stevebosman.angles.simplifyExample3
      */
     fun simplify(start:Number = 0, startInclusive:Boolean = true): Angle {
         return if (accuracy == Accuracy.DEGREES) {
