@@ -19,62 +19,58 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
     }
 
     /**
-     * Add this angle to another angle.
-     * @param v angle to add to this angle
-     * @return this + v
+     * Add an angle [a] to this angle **a₀**.
+     * @return a₀ + a
      */
-    operator fun plus(v: Angle): Angle {
-        return if (accuracy == Accuracy.RADIANS || accuracy != v.accuracy) {
-            fromRadians(radians + v.radians, if (accuracy == v.accuracy) {
+    operator fun plus(a: Angle): Angle {
+        return if (accuracy == Accuracy.RADIANS || accuracy != a.accuracy) {
+            fromRadians(radians + a.radians, if (accuracy == a.accuracy) {
                 accuracy
             } else {
                 Accuracy.MIXED
             })
         } else {
-            fromDegrees(degrees + v.degrees)
+            fromDegrees(degrees + a.degrees)
         }
     }
 
     /**
-     * Subtract one angle from this angle.
-     * @param v angle to subtract from this angle
-     * @return this - v
+     * Subtract an angle [a] from this angle **a₀**.
+     * @return a₀ - a
      */
-    operator fun minus(v: Angle): Angle {
-        return if (accuracy == Accuracy.RADIANS || accuracy != v.accuracy) {
-            fromRadians(radians - v.radians, if (accuracy == v.accuracy) {
+    operator fun minus(a: Angle): Angle {
+        return if (accuracy == Accuracy.RADIANS || accuracy != a.accuracy) {
+            fromRadians(radians - a.radians, if (accuracy == a.accuracy) {
                 accuracy
             } else {
                 Accuracy.MIXED
             })
         } else {
-            fromDegrees(degrees - v.degrees)
+            fromDegrees(degrees - a.degrees)
         }
     }
 
     /**
-     * Divide this angle (**a**) by a scalar constant, **a** * [d].
-     * @param d scalar to multiply this angle by
-     * @return this * d
+     * Multiply this angle **a** by a scalar constant [s].
+     * @return a * s
      */
-    operator fun times(d: Number): Angle {
+    operator fun times(s: Number): Angle {
         return if (accuracy == Accuracy.DEGREES) {
-            fromDegrees(degrees * d.toDouble())
+            fromDegrees(degrees * s.toDouble())
         } else {
-            fromRadians(radians * d.toDouble(), accuracy)
+            fromRadians(radians * s.toDouble(), accuracy)
         }
     }
 
     /**
-     * Divide this angle (**a**) by a scalar constant, **a** / [d].
-     * @param d scalar to divide this angle by
-     * @return this / d
+     * Divide this angle **a** by a scalar constant [s].
+     * @return a / s
      */
-    operator fun div(d: Number): Angle {
+    operator fun div(s: Number): Angle {
         return if (accuracy == Accuracy.DEGREES) {
-            fromDegrees(degrees / d.toDouble())
+            fromDegrees(degrees / s.toDouble())
         } else {
-            fromRadians(radians / d.toDouble(), accuracy)
+            fromRadians(radians / s.toDouble(), accuracy)
         }
     }
 
@@ -137,7 +133,7 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
         private fun fromRadians(r: Number, accuracy: Accuracy): Angle {
             if (accuracy!=Accuracy.RADIANS && accuracy!=Accuracy.MIXED)
                 throw IllegalArgumentException("")
-            return Angle(accuracy, r.toDouble(), radToDeg(r.toDouble()))
+            return Angle(accuracy, r.toDouble(), radiansToDegrees(r.toDouble()))
         }
 
         /**
@@ -155,7 +151,7 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
          */
         fun fromDegrees(d: Number, m: Number = 0.0, s: Number = 0.0): Angle {
             val degrees = d.toDouble() + (m.toDouble() + s.toDouble() / 60) / 60
-            return Angle(Accuracy.DEGREES, degToRad(degrees), degrees)
+            return Angle(Accuracy.DEGREES, degreesToRadians(degrees), degrees)
         }
     }
 
