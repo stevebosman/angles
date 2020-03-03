@@ -33,8 +33,8 @@ publishing {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/stevebosman/angles")
             credentials {
-                username = project.findProperty("gpr.user") ?: System.getProperty("GITHUB_USERNAME")
-                password = project.findProperty("gpr.password") ?: System.getProperty("GITHUB_PUBLISH_TOKEN")
+                username = System.getenv("GITHUB_USERNAME")
+                password = System.getenv("GITHUB_PUBLISH_TOKEN")
             }
         }
     }
