@@ -31,39 +31,39 @@ fun cot(a: Angle): Double {
 
 // ARC- functions
 
-fun atan(v: Double): Angle {
-    return Angle.fromRadians(kotlin.math.atan(v))
+fun atan(v: Number): Angle {
+    return Angle.fromRadians(kotlin.math.atan(v.toDouble()))
 }
 
-fun asin(v: Double): Angle {
-    if (v > 1 || v < -1) {
+fun asin(v: Number): Angle {
+    if (v.toDouble() > 1 || v.toDouble() < -1) {
         throw IllegalArgumentException("v should be between -1 and 1 (inclusive)")
     }
-    return Angle.fromRadians(kotlin.math.asin(v))
+    return Angle.fromRadians(kotlin.math.asin(v.toDouble()))
 }
 
-fun acos(v: Double): Angle {
-    if (v > 1 || v < -1) {
+fun acos(v: Number): Angle {
+    if (v.toDouble() > 1 || v.toDouble() < -1) {
         throw IllegalArgumentException("v should be between -1 and 1 (inclusive)")
     }
-    return Angle.fromRadians(kotlin.math.acos(v))
+    return Angle.fromRadians(kotlin.math.acos(v.toDouble()))
 }
 
-fun asec(v: Double): Angle {
-    if (v > -1 && v < 1) {
+fun asec(v: Number): Angle {
+    if (v.toDouble() > -1 && v.toDouble() < 1) {
         throw IllegalArgumentException("abs(v) should be greater than 1")
     }
-    return Angle.fromRadians(kotlin.math.acos(1 / v))
+    return Angle.fromRadians(kotlin.math.acos(1 / v.toDouble()))
 }
 
-fun acsc(v: Double): Angle {
-    if (v > -1 && v < 1) {
+fun acsc(v: Number): Angle {
+    if (v.toDouble() > -1 && v.toDouble() < 1) {
         throw IllegalArgumentException("abs(v) should be greater than 1")
     }
-    return Angle.fromRadians(kotlin.math.asin(1 / v))
+    return Angle.fromRadians(kotlin.math.asin(1 / v.toDouble()))
 }
 
-fun acot(v: Double): Angle {
-    return Angle.fromRadians(kotlin.math.atan(1 / v))
+fun acot(v: Number): Angle {
+    return Angle.fromRadians(kotlin.math.atan(1 / v.toDouble()))
 }
 
