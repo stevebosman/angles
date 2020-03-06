@@ -102,7 +102,7 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
      * Decide if this angle is equivalent to another angle [a2]
      * subject to a given maximum absolute difference [maxAbsoluteDifference].
      *
-     * For example, 180° is equivalent to π radians
+     * For example, 180° is equivalent to π radians, but not 3π radians
      */
     fun isEquivalentTo(a2: Angle, maxAbsoluteDifference: Double = 0.0): Boolean {
         val absoluteDifference:Double
@@ -120,7 +120,7 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
      * is equivalent to the simplified equivalent of another angle [a2]
      * subject to a given maximum absolute difference [maxAbsoluteDifference].
      *
-     * For example, 180° is equivalent to 3π radians
+     * For example, 180° is equivalent to π radians and 3π radians
      */
     fun whenSimplifiedIsEquivalentTo(a2: Angle, maxAbsoluteDifference: Double = 0.0): Boolean {
         return this.simplify().isEquivalentTo(a2.simplify(), maxAbsoluteDifference)
