@@ -1,6 +1,7 @@
 package uk.co.stevebosman.angles
 
 import kotlin.math.PI
+import kotlin.math.abs
 
 /**
  * Representation of an angle, more specifically a rotation.
@@ -91,17 +92,50 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
      */
     fun simplify(start:Number = 0, startInclusive:Boolean = true): Angle {
         return if (accuracy == Accuracy.DEGREES) {
-            fromDegrees(simplify(degrees, start.toDouble(), startInclusive, ONE_TURN_DEGREES))
+            fromDegrees(simplify(degrees, ONE_TURN_DEGREES, start.toDouble(), startInclusive))
         } else {
-            fromRadians(simplify(radians, start.toDouble(), startInclusive, ONE_TURN_RADIANS), accuracy)
+            fromRadians(simplify(radians, ONE_TURN_RADIANS, start.toDouble(), startInclusive), accuracy)
         }
+    }
+
+    /**
+     * Decide if this angle is equivalent to another angle [a2]
+     * subject to a given maximum absolute difference [maxAbsoluteDifference].
+     *
+     * For example, 180° is equivalent to π radians
+     */
+    fun isEquivalentTo(a2: Angle, maxAbsoluteDifference: Double = 0.0): Boolean {
+        val absoluteDifference:Double
+        if (this.accuracy == Accuracy.DEGREES && a2.accuracy == Accuracy.DEGREES) {
+            absoluteDifference = abs(a2.degrees - degrees)
+        } else {
+            absoluteDifference = abs(a2.radians - radians)
+        }
+        return absoluteDifference <= abs(maxAbsoluteDifference)
+    }
+
+
+    /**
+     * Decide if the simplified equivalent of this angle
+     * is equivalent to the simplified equivalent of another angle [a2]
+     * subject to a given maximum absolute difference [maxAbsoluteDifference].
+     *
+     * For example, 180° is equivalent to 3π radians
+     */
+    fun whenSimplifiedIsEquivalentTo(a2: Angle, maxAbsoluteDifference: Double = 0.0): Boolean {
+        return this.simplify().isEquivalentTo(a2.simplify(), maxAbsoluteDifference)
     }
 
     companion object {
         const val ONE_TURN_RADIANS = 2 * PI
         const val ONE_TURN_DEGREES = 360
 
-        private fun simplify(v: Double, min: Number, minInclusive:Boolean = true, oneTurn: Number): Double {
+        private fun simplify(
+            v: Double,
+            oneTurn: Number,
+            min: Number = 0,
+            minInclusive: Boolean = true
+        ): Double {
             val minD = min.toDouble()
             val oneTurnD = oneTurn.toDouble()
             val max = minD + oneTurnD

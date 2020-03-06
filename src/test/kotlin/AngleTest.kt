@@ -1,7 +1,8 @@
 package uk.co.stevebosman.angles
 
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import uk.co.stevebosman.angles.Angle.Companion.ONE_TURN_RADIANS
 import kotlin.math.PI
 
 internal class AngleTest {
@@ -249,5 +250,53 @@ internal class AngleTest {
         assertEquals(Angle.Accuracy.MIXED, test.accuracy)
         assertEquals(PI, test.radians)
         assertEquals(180.0, test.degrees)
+    }
+
+    @Test
+    fun whenSimplifiedIsEquivalentTo() {
+        for (i in 1..20) {
+            val degrees1 = Angle.fromDegrees(Angle.ONE_TURN_DEGREES / i.toDouble())
+            val radians1 = Angle.fromRadians(ONE_TURN_RADIANS / i.toDouble())
+            val degrees2 = Angle.fromDegrees(Angle.ONE_TURN_DEGREES * (i+1)  / i.toDouble())
+            val radians2 = Angle.fromRadians (ONE_TURN_RADIANS * (-i+1) / i.toDouble())
+            assertWhenSimplifiedIsEquivalentTo(true, radians1, degrees1)
+            assertWhenSimplifiedIsEquivalentTo(true, radians1, degrees2)
+            assertWhenSimplifiedIsEquivalentTo(true, radians1, radians2)
+            assertWhenSimplifiedIsEquivalentTo(true, degrees1, radians1)
+            assertWhenSimplifiedIsEquivalentTo(true, degrees1, degrees2)
+            assertWhenSimplifiedIsEquivalentTo(true, degrees1, radians2)
+        }
+    }
+
+    private fun assertWhenSimplifiedIsEquivalentTo(expected:Boolean, angle1: Angle, angle2: Angle) {
+        if (expected) {
+            assertTrue(angle1.whenSimplifiedIsEquivalentTo(angle2, 3e-14), "expected $angle1 to be equivalent to $angle2")
+        } else {
+            assertFalse(angle1.whenSimplifiedIsEquivalentTo(angle2, 3e-14), "expected $angle1 to not be equivalent to $angle2")
+        }
+    }
+
+    @Test
+    fun isEquivalentTo() {
+        for (i in 1..20) {
+            val degrees1 = Angle.fromDegrees(Angle.ONE_TURN_DEGREES / i.toDouble())
+            val radians1 = Angle.fromRadians(ONE_TURN_RADIANS / i.toDouble())
+            val degrees2 = Angle.fromDegrees(Angle.ONE_TURN_DEGREES * (i+1)  / i.toDouble())
+            val radians2 = Angle.fromRadians (ONE_TURN_RADIANS * (-i+1) / i.toDouble())
+            assertIsEquivalentTo(true, radians1, degrees1)
+            assertIsEquivalentTo(false, radians1, degrees2)
+            assertIsEquivalentTo(false, radians1, radians2)
+            assertIsEquivalentTo(true, degrees1, radians1)
+            assertIsEquivalentTo(false, degrees1, degrees2)
+            assertIsEquivalentTo(false, degrees1, radians2)
+        }
+    }
+
+    private fun assertIsEquivalentTo(expected:Boolean, angle1: Angle, angle2: Angle) {
+        if (expected) {
+            assertTrue(angle1.isEquivalentTo(angle2, 3e-14), "expected $angle1 to be equivalent to $angle2")
+        } else {
+            assertFalse(angle1.isEquivalentTo(angle2, 3e-14), "expected $angle1 to not be equivalent to $angle2")
+        }
     }
 }
