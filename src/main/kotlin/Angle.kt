@@ -102,9 +102,22 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
      * Decide if this angle is equivalent to another angle [a2]
      * subject to a given maximum absolute difference [maxAbsoluteDifference].
      *
-     * For example, 180° is equivalent to π radians, but not 3π radians
+     * For example, 180° is equivalent to π radians, but not 3π radians.
      */
     fun isEquivalentTo(a2: Angle, maxAbsoluteDifference: Double = 0.0): Boolean {
+        if (
+            (
+                this.accuracy == Accuracy.DEGREES
+                && this.degrees == a2.degrees
+                ) || (
+                    (
+                        this.accuracy == Accuracy.RADIANS
+                        || this.accuracy == Accuracy.MIXED
+                    ) && this.radians == a2.radians
+                )
+        ) {
+            return true
+        }
         val absoluteDifference:Double
         if (this.accuracy == Accuracy.DEGREES && a2.accuracy == Accuracy.DEGREES) {
             absoluteDifference = abs(a2.degrees - degrees)
@@ -114,15 +127,27 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
         return absoluteDifference <= abs(maxAbsoluteDifference)
     }
 
-
     /**
      * Decide if the simplified equivalent of this angle
      * is equivalent to the simplified equivalent of another angle [a2]
      * subject to a given maximum absolute difference [maxAbsoluteDifference].
      *
-     * For example, 180° is equivalent to π radians and 3π radians
+     * For example, 180° is equivalent to π radians and 3π radians.
      */
     fun whenSimplifiedIsEquivalentTo(a2: Angle, maxAbsoluteDifference: Double = 0.0): Boolean {
+        if (
+            (
+                this.accuracy == Accuracy.DEGREES
+                && this.degrees == a2.degrees
+            ) || (
+                (
+                    this.accuracy == Accuracy.RADIANS
+                    || this.accuracy == Accuracy.MIXED
+                ) && this.radians == a2.radians
+            )
+        ) {
+            return true
+        }
         return this.simplify().isEquivalentTo(a2.simplify(), maxAbsoluteDifference)
     }
 

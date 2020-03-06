@@ -278,6 +278,12 @@ internal class AngleTest {
 
     @Test
     fun isEquivalentTo() {
+        val nanDegrees = Angle.fromDegrees(Double.NaN)
+        val nanRadians = Angle.fromRadians(Double.NaN)
+        val infinityDegrees = Angle.fromDegrees(Double.POSITIVE_INFINITY)
+        val infinityRadians = Angle.fromRadians(Double.POSITIVE_INFINITY)
+        val negativeInfinityDegrees = Angle.fromDegrees(Double.NEGATIVE_INFINITY)
+        val negativeInfinityRadians = Angle.fromRadians(Double.NEGATIVE_INFINITY)
         for (i in 1..20) {
             val degrees1 = Angle.fromDegrees(Angle.ONE_TURN_DEGREES / i.toDouble())
             val radians1 = Angle.fromRadians(ONE_TURN_RADIANS / i.toDouble())
@@ -289,7 +295,12 @@ internal class AngleTest {
             assertIsEquivalentTo(true, degrees1, radians1)
             assertIsEquivalentTo(false, degrees1, degrees2)
             assertIsEquivalentTo(false, degrees1, radians2)
+            assertIsEquivalentTo(false, degrees1, nanDegrees)
+            assertIsEquivalentTo(false, degrees1, nanRadians)
         }
+        assertIsEquivalentTo(Double.NaN == Double.NaN, nanDegrees, nanRadians)
+        assertIsEquivalentTo(Double.POSITIVE_INFINITY == Double.POSITIVE_INFINITY, infinityRadians, infinityDegrees)
+        assertIsEquivalentTo(Double.NEGATIVE_INFINITY == Double.NEGATIVE_INFINITY, negativeInfinityDegrees, negativeInfinityRadians)
     }
 
     private fun assertIsEquivalentTo(expected:Boolean, angle1: Angle, angle2: Angle) {
