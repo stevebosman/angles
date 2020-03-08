@@ -253,30 +253,6 @@ internal class AngleTest {
     }
 
     @Test
-    fun whenSimplifiedIsEquivalentTo() {
-        for (i in 1..20) {
-            val degrees1 = Angle.fromDegrees(Angle.ONE_TURN_DEGREES / i.toDouble())
-            val radians1 = Angle.fromRadians(ONE_TURN_RADIANS / i.toDouble())
-            val degrees2 = Angle.fromDegrees(Angle.ONE_TURN_DEGREES * (i+1)  / i.toDouble())
-            val radians2 = Angle.fromRadians (ONE_TURN_RADIANS * (-i+1) / i.toDouble())
-            assertWhenSimplifiedIsEquivalentTo(true, radians1, degrees1)
-            assertWhenSimplifiedIsEquivalentTo(true, radians1, degrees2)
-            assertWhenSimplifiedIsEquivalentTo(true, radians1, radians2)
-            assertWhenSimplifiedIsEquivalentTo(true, degrees1, radians1)
-            assertWhenSimplifiedIsEquivalentTo(true, degrees1, degrees2)
-            assertWhenSimplifiedIsEquivalentTo(true, degrees1, radians2)
-        }
-    }
-
-    private fun assertWhenSimplifiedIsEquivalentTo(expected:Boolean, angle1: Angle, angle2: Angle) {
-        if (expected) {
-            assertTrue(angle1.whenSimplifiedIsEquivalentTo(angle2, 3e-14), "expected $angle1 to be equivalent to $angle2")
-        } else {
-            assertFalse(angle1.whenSimplifiedIsEquivalentTo(angle2, 3e-14), "expected $angle1 to not be equivalent to $angle2")
-        }
-    }
-
-    @Test
     fun isEquivalentTo() {
         val nanDegrees = Angle.fromDegrees(Double.NaN)
         val nanRadians = Angle.fromRadians(Double.NaN)
@@ -290,24 +266,73 @@ internal class AngleTest {
             val degrees2 = Angle.fromDegrees(Angle.ONE_TURN_DEGREES * (i+1)  / i.toDouble())
             val radians2 = Angle.fromRadians (ONE_TURN_RADIANS * (-i+1) / i.toDouble())
             assertIsEquivalentTo(true, radians1, degrees1)
-            assertIsEquivalentTo(false, radians1, degrees2)
-            assertIsEquivalentTo(false, radians1, radians2)
+            assertIsEquivalentTo(true, radians1, degrees2)
+            assertIsEquivalentTo(true, radians1, radians2)
             assertIsEquivalentTo(true, degrees1, radians1)
-            assertIsEquivalentTo(false, degrees1, degrees2)
-            assertIsEquivalentTo(false, degrees1, radians2)
+            assertIsEquivalentTo(true, degrees1, degrees2)
+            assertIsEquivalentTo(true, degrees1, radians2)
+            assertIsEquivalentTo(false, degrees1, infinityDegrees)
+            assertIsEquivalentTo(false, degrees1, infinityRadians)
+            assertIsEquivalentTo(false, degrees1, negativeInfinityDegrees)
+            assertIsEquivalentTo(false, degrees1, negativeInfinityRadians)
             assertIsEquivalentTo(false, degrees1, nanDegrees)
             assertIsEquivalentTo(false, degrees1, nanRadians)
         }
-        assertIsEquivalentTo(Double.NaN == Double.NaN, nanDegrees, nanRadians)
         assertIsEquivalentTo(Double.POSITIVE_INFINITY == Double.POSITIVE_INFINITY, infinityRadians, infinityDegrees)
         assertIsEquivalentTo(Double.NEGATIVE_INFINITY == Double.NEGATIVE_INFINITY, negativeInfinityDegrees, negativeInfinityRadians)
+        assertIsEquivalentTo(Double.NaN == Double.NaN, nanDegrees, nanRadians)
     }
 
     private fun assertIsEquivalentTo(expected:Boolean, angle1: Angle, angle2: Angle) {
+        println("Checking $angle1 isEquivalentTo $angle2")
         if (expected) {
-            assertTrue(angle1.isEquivalentTo(angle2, 3e-14), "expected $angle1 to be equivalent to $angle2")
+            assertTrue(angle1.isEquivalentTo(angle2, 0.0, 3e-14), "expected $angle1 to be equivalent to $angle2")
+            assertTrue(angle1.isEquivalentTo(angle2, 1e-14, 0.0), "expected $angle1 to be equivalent to $angle2")
         } else {
-            assertFalse(angle1.isEquivalentTo(angle2, 3e-14), "expected $angle1 to not be equivalent to $angle2")
+            assertFalse(angle1.isEquivalentTo(angle2, 0.0, 3e-14), "expected $angle1 to not be equivalent to $angle2")
+            assertFalse(angle1.isEquivalentTo(angle2, 1e-14, 0.0), "expected $angle1 to not be equivalent to $angle2")
+        }
+    }
+
+    @Test
+    fun isCloseTo() {
+        val nanDegrees = Angle.fromDegrees(Double.NaN)
+        val nanRadians = Angle.fromRadians(Double.NaN)
+        val infinityDegrees = Angle.fromDegrees(Double.POSITIVE_INFINITY)
+        val infinityRadians = Angle.fromRadians(Double.POSITIVE_INFINITY)
+        val negativeInfinityDegrees = Angle.fromDegrees(Double.NEGATIVE_INFINITY)
+        val negativeInfinityRadians = Angle.fromRadians(Double.NEGATIVE_INFINITY)
+        for (i in 1..20) {
+            val degrees1 = Angle.fromDegrees(Angle.ONE_TURN_DEGREES / i.toDouble())
+            val radians1 = Angle.fromRadians(ONE_TURN_RADIANS / i.toDouble())
+            val degrees2 = Angle.fromDegrees(Angle.ONE_TURN_DEGREES * (i+1)  / i.toDouble())
+            val radians2 = Angle.fromRadians (ONE_TURN_RADIANS * (-i+1) / i.toDouble())
+            assertIsCloseTo(true, radians1, degrees1)
+            assertIsCloseTo(false, radians1, degrees2)
+            assertIsCloseTo(false, radians1, radians2)
+            assertIsCloseTo(true, degrees1, radians1)
+            assertIsCloseTo(false, degrees1, degrees2)
+            assertIsCloseTo(false, degrees1, radians2)
+            assertIsCloseTo(false, degrees1, infinityDegrees)
+            assertIsCloseTo(false, degrees1, infinityRadians)
+            assertIsCloseTo(false, degrees1, negativeInfinityDegrees)
+            assertIsCloseTo(false, degrees1, negativeInfinityRadians)
+            assertIsCloseTo(false, degrees1, nanDegrees)
+            assertIsCloseTo(false, degrees1, nanRadians)
+        }
+        assertIsCloseTo(Double.POSITIVE_INFINITY == Double.POSITIVE_INFINITY, infinityRadians, infinityDegrees)
+        assertIsCloseTo(Double.NEGATIVE_INFINITY == Double.NEGATIVE_INFINITY, negativeInfinityDegrees, negativeInfinityRadians)
+        assertIsCloseTo(Double.NaN == Double.NaN, nanDegrees, nanRadians)
+    }
+
+    private fun assertIsCloseTo(expected:Boolean, angle1: Angle, angle2: Angle) {
+        println("Checking $angle1 isCloseTo $angle2")
+        if (expected) {
+            assertTrue(angle1.isCloseTo(angle2, 0.0, 3e-14), "expected $angle1 to be equivalent to $angle2")
+            assertTrue(angle1.isCloseTo(angle2, 3e-14, 0.0), "expected $angle1 to be equivalent to $angle2")
+        } else {
+            assertFalse(angle1.isCloseTo(angle2, 0.0, 3e-14), "expected $angle1 to not be equivalent to $angle2")
+            assertFalse(angle1.isCloseTo(angle2, 3e-14, 0.0), "expected $angle1 to not be equivalent to $angle2")
         }
     }
 }

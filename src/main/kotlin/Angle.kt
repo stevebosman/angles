@@ -1,7 +1,7 @@
 package uk.co.stevebosman.angles
 
+import uk.co.stevebosman.close.isClose
 import kotlin.math.PI
-import kotlin.math.abs
 
 /**
  * Representation of an angle, more specifically a rotation.
@@ -100,11 +100,15 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
 
     /**
      * Decide if this angle is equivalent to another angle [a2]
-     * subject to a given maximum absolute difference [maxAbsoluteDifference].
+     * subject to given tolerances [relativeTolerance] and [absoluteTolerance].
      *
      * For example, 180° is equivalent to π radians, but not 3π radians.
      */
-    fun isEquivalentTo(a2: Angle, maxAbsoluteDifference: Double = 0.0): Boolean {
+    fun isCloseTo(
+        a2: Angle,
+        relativeTolerance: Double = 0.0,
+        absoluteTolerance: Double = 0.0
+    ): Boolean {
         if (
             (
                 this.accuracy == Accuracy.DEGREES
@@ -118,23 +122,27 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
         ) {
             return true
         }
-        val absoluteDifference:Double
+        val result:Boolean
         if (this.accuracy == Accuracy.DEGREES && a2.accuracy == Accuracy.DEGREES) {
-            absoluteDifference = abs(a2.degrees - degrees)
+            result = isClose(this.degrees, a2.degrees, relativeTolerance, absoluteTolerance)
         } else {
-            absoluteDifference = abs(a2.radians - radians)
+            result = isClose(this.radians, a2.radians, relativeTolerance, absoluteTolerance)
         }
-        return absoluteDifference <= abs(maxAbsoluteDifference)
+        return result
     }
 
     /**
      * Decide if the simplified equivalent of this angle
      * is equivalent to the simplified equivalent of another angle [a2]
-     * subject to a given maximum absolute difference [maxAbsoluteDifference].
+     * subject to a given maximum absolute difference [absoluteTolerance].
      *
      * For example, 180° is equivalent to π radians and 3π radians.
      */
-    fun whenSimplifiedIsEquivalentTo(a2: Angle, maxAbsoluteDifference: Double = 0.0): Boolean {
+    fun isEquivalentTo(
+        a2: Angle,
+        relativeTolerance: Double = 0.0,
+        absoluteTolerance: Double = 0.0
+    ): Boolean {
         if (
             (
                 this.accuracy == Accuracy.DEGREES
@@ -148,7 +156,7 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
         ) {
             return true
         }
-        return this.simplify().isEquivalentTo(a2.simplify(), maxAbsoluteDifference)
+        return this.simplify().isCloseTo(a2.simplify(), relativeTolerance, absoluteTolerance)
     }
 
     companion object {
@@ -165,7 +173,9 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
             val oneTurnD = oneTurn.toDouble()
             val max = minD + oneTurnD
             var v1 = v
-            if (minInclusive) {
+            if (v.isNaN() || v.isInfinite()) {
+                // Can't be simplified
+            } else if (minInclusive) {
                 // simplify to the range [min, max)
                 while (v1 >= max) {
                     v1 -= oneTurnD
