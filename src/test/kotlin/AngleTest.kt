@@ -280,6 +280,7 @@ internal class AngleTest {
         }
         assertIsEquivalentTo(Double.POSITIVE_INFINITY == Double.POSITIVE_INFINITY, infinityRadians, infinityDegrees)
         assertIsEquivalentTo(Double.NEGATIVE_INFINITY == Double.NEGATIVE_INFINITY, negativeInfinityDegrees, negativeInfinityRadians)
+        @Suppress("ConvertNaNEquality")
         assertIsEquivalentTo(Double.NaN == Double.NaN, nanDegrees, nanRadians)
     }
 
@@ -322,6 +323,7 @@ internal class AngleTest {
         }
         assertIsCloseTo(Double.POSITIVE_INFINITY == Double.POSITIVE_INFINITY, infinityRadians, infinityDegrees)
         assertIsCloseTo(Double.NEGATIVE_INFINITY == Double.NEGATIVE_INFINITY, negativeInfinityDegrees, negativeInfinityRadians)
+        @Suppress("ConvertNaNEquality")
         assertIsCloseTo(Double.NaN == Double.NaN, nanDegrees, nanRadians)
     }
 
@@ -334,5 +336,29 @@ internal class AngleTest {
             assertFalse(angle1.isCloseTo(angle2, 0.0, 3e-14), "expected $angle1 to not be equivalent to $angle2")
             assertFalse(angle1.isCloseTo(angle2, 3e-14, 0.0), "expected $angle1 to not be equivalent to $angle2")
         }
+    }
+
+    @Test
+    fun isNaN() {
+        assertTrue(Angle.fromDegrees(Double.NaN).isNaN())
+        assertFalse(Angle.fromDegrees(Double.POSITIVE_INFINITY).isNaN())
+        assertFalse(Angle.fromDegrees(Double.NEGATIVE_INFINITY).isNaN())
+        assertFalse(Angle.fromDegrees(12.0).isNaN())
+    }
+
+    @Test
+    fun isFinite() {
+        assertFalse(Angle.fromDegrees(Double.NaN).isFinite())
+        assertFalse(Angle.fromDegrees(Double.POSITIVE_INFINITY).isFinite())
+        assertFalse(Angle.fromDegrees(Double.NEGATIVE_INFINITY).isFinite())
+        assertTrue(Angle.fromDegrees(12.0).isFinite())
+    }
+
+    @Test
+    fun isInfinite() {
+        assertFalse(Angle.fromDegrees(Double.NaN).isInfinite())
+        assertTrue(Angle.fromDegrees(Double.POSITIVE_INFINITY).isInfinite())
+        assertTrue(Angle.fromDegrees(Double.NEGATIVE_INFINITY).isInfinite())
+        assertFalse(Angle.fromDegrees(12.0).isInfinite())
     }
 }

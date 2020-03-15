@@ -25,11 +25,13 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
      */
     operator fun plus(a: Angle): Angle {
         return if (accuracy == Accuracy.RADIANS || accuracy != a.accuracy) {
-            fromRadians(radians + a.radians, if (accuracy == a.accuracy) {
-                accuracy
-            } else {
-                Accuracy.MIXED
-            })
+            fromRadians(
+                radians + a.radians, if (accuracy == a.accuracy) {
+                    accuracy
+                } else {
+                    Accuracy.MIXED
+                }
+            )
         } else {
             fromDegrees(degrees + a.degrees)
         }
@@ -41,11 +43,13 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
      */
     operator fun minus(a: Angle): Angle {
         return if (accuracy == Accuracy.RADIANS || accuracy != a.accuracy) {
-            fromRadians(radians - a.radians, if (accuracy == a.accuracy) {
-                accuracy
-            } else {
-                Accuracy.MIXED
-            })
+            fromRadians(
+                radians - a.radians, if (accuracy == a.accuracy) {
+                    accuracy
+                } else {
+                    Accuracy.MIXED
+                }
+            )
         } else {
             fromDegrees(degrees - a.degrees)
         }
@@ -75,8 +79,25 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
         }
     }
 
+    fun isNaN(): Boolean {
+        return radians.isNaN() || degrees.isNaN()
+    }
+
+    fun isInfinite(): Boolean {
+        return radians.isInfinite() || degrees.isInfinite()
+    }
+
+    fun isFinite(): Boolean {
+        return radians.isFinite() && degrees.isFinite()
+    }
+
     override fun toString(): String {
-        return if (accuracy == Accuracy.DEGREES) "$degrees°" else if (accuracy == Accuracy.MIXED) "~$degrees°/$radians rads" else "$radians rads"
+        return if (isNaN()) "NaN"
+        else if (radians == Double.POSITIVE_INFINITY || degrees == Double.POSITIVE_INFINITY) "∞"
+        else if (radians == Double.NEGATIVE_INFINITY || degrees == Double.NEGATIVE_INFINITY) "-∞"
+        else if (accuracy == Accuracy.DEGREES) "$degrees°"
+        else if (accuracy == Accuracy.MIXED) "~$degrees°/$radians rads"
+        else "$radians rads"
     }
 
     /**
@@ -90,7 +111,7 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
      * @sample uk.co.stevebosman.angles.simplifyExample2
      * @sample uk.co.stevebosman.angles.simplifyExample3
      */
-    fun simplify(start:Number = 0, startInclusive:Boolean = true): Angle {
+    fun simplify(start: Number = 0, startInclusive: Boolean = true): Angle {
         return if (accuracy == Accuracy.DEGREES) {
             fromDegrees(simplify(degrees, ONE_TURN_DEGREES, start.toDouble(), startInclusive))
         } else {
@@ -111,18 +132,18 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
     ): Boolean {
         if (
             (
-                this.accuracy == Accuracy.DEGREES
-                && this.degrees == a2.degrees
-                ) || (
+                    this.accuracy == Accuracy.DEGREES
+                            && this.degrees == a2.degrees
+                    ) || (
                     (
-                        this.accuracy == Accuracy.RADIANS
-                        || this.accuracy == Accuracy.MIXED
-                    ) && this.radians == a2.radians
-                )
+                            this.accuracy == Accuracy.RADIANS
+                                    || this.accuracy == Accuracy.MIXED
+                            ) && this.radians == a2.radians
+                    )
         ) {
             return true
         }
-        val result:Boolean
+        val result: Boolean
         if (this.accuracy == Accuracy.DEGREES && a2.accuracy == Accuracy.DEGREES) {
             result = isClose(this.degrees, a2.degrees, relativeTolerance, absoluteTolerance)
         } else {
@@ -145,14 +166,14 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
     ): Boolean {
         if (
             (
-                this.accuracy == Accuracy.DEGREES
-                && this.degrees == a2.degrees
-            ) || (
-                (
-                    this.accuracy == Accuracy.RADIANS
-                    || this.accuracy == Accuracy.MIXED
-                ) && this.radians == a2.radians
-            )
+                    this.accuracy == Accuracy.DEGREES
+                            && this.degrees == a2.degrees
+                    ) || (
+                    (
+                            this.accuracy == Accuracy.RADIANS
+                                    || this.accuracy == Accuracy.MIXED
+                            ) && this.radians == a2.radians
+                    )
         ) {
             return true
         }
@@ -162,6 +183,9 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
     companion object {
         const val ONE_TURN_RADIANS = 2 * PI
         const val ONE_TURN_DEGREES = 360
+        val NaN = Angle(Accuracy.MIXED, Double.NaN, Double.NaN)
+        val POSITIVE_INFINITY = Angle(Accuracy.MIXED, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY)
+        val NEGATIVE_INFINITY = Angle(Accuracy.MIXED, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY)
 
         private fun simplify(
             v: Double,
@@ -200,9 +224,17 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
          * marking it with the given [accuracy] ([Accuracy.RADIANS] or [Accuracy.MIXED]).
          */
         private fun fromRadians(r: Number, accuracy: Accuracy): Angle {
-            if (accuracy!=Accuracy.RADIANS && accuracy!=Accuracy.MIXED)
+            if (accuracy != Accuracy.RADIANS && accuracy != Accuracy.MIXED)
                 throw IllegalArgumentException("")
-            return Angle(accuracy, r.toDouble(), radiansToDegrees(r.toDouble()))
+            if (r.toDouble().isNaN()) {
+                return NaN
+            } else if (r.toDouble() == Double.POSITIVE_INFINITY) {
+                return POSITIVE_INFINITY
+            } else if (r.toDouble() == Double.NEGATIVE_INFINITY) {
+                return NEGATIVE_INFINITY
+            } else {
+                return Angle(accuracy, r.toDouble(), radiansToDegrees(r.toDouble()))
+            }
         }
 
         /**
@@ -220,7 +252,15 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
          */
         fun fromDegrees(d: Number, m: Number = 0.0, s: Number = 0.0): Angle {
             val degrees = d.toDouble() + (m.toDouble() + s.toDouble() / 60) / 60
-            return Angle(Accuracy.DEGREES, degreesToRadians(degrees), degrees)
+            if (degrees.isNaN()) {
+                return NaN
+            } else if (degrees == Double.POSITIVE_INFINITY) {
+                return POSITIVE_INFINITY
+            } else if (degrees == Double.NEGATIVE_INFINITY) {
+                return NEGATIVE_INFINITY
+            } else {
+                return Angle(Accuracy.DEGREES, degreesToRadians(degrees), degrees)
+            }
         }
     }
 
@@ -229,10 +269,12 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
          * Marks an angle as created using degrees.
          */
         DEGREES,
+
         /**
          * Marks an angle as created using radians.
          */
         RADIANS,
+
         /**
          * Marks an angle as created using a mix of degrees or radians,
          * further arithmetic will use the radians value.
