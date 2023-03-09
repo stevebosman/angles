@@ -8,7 +8,7 @@ import kotlin.math.PI
  *
  * Unlike the standard Kotlin trigonometric functions,
  * there is no need to convert between radians and degrees
- * as this is is done automatically. This makes the maths slower, but safer.
+ * as this is done automatically. This makes the maths slower, but safer.
  */
 class Angle private constructor(val accuracy: Accuracy, val radians: Double, val degrees: Double) {
     /**
@@ -130,7 +130,7 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
         relativeTolerance: Double = 0.0,
         absoluteTolerance: Double = 0.0
     ): Boolean {
-        if (
+        return if (
             (
                     this.accuracy == Accuracy.DEGREES
                             && this.degrees == a2.degrees
@@ -141,15 +141,12 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
                             ) && this.radians == a2.radians
                     )
         ) {
-            return true
-        }
-        val result: Boolean
-        if (this.accuracy == Accuracy.DEGREES && a2.accuracy == Accuracy.DEGREES) {
-            result = isClose(this.degrees, a2.degrees, relativeTolerance, absoluteTolerance)
+            true
+        } else if (this.accuracy == Accuracy.DEGREES && a2.accuracy == Accuracy.DEGREES) {
+            isClose(this.degrees, a2.degrees, relativeTolerance, absoluteTolerance)
         } else {
-            result = isClose(this.radians, a2.radians, relativeTolerance, absoluteTolerance)
+            isClose(this.radians, a2.radians, relativeTolerance, absoluteTolerance)
         }
-        return result
     }
 
     /**
@@ -226,14 +223,14 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
         private fun fromRadians(r: Number, accuracy: Accuracy): Angle {
             if (accuracy != Accuracy.RADIANS && accuracy != Accuracy.MIXED)
                 throw IllegalArgumentException("")
-            if (r.toDouble().isNaN()) {
-                return NaN
+            return if (r.toDouble().isNaN()) {
+                NaN
             } else if (r.toDouble() == Double.POSITIVE_INFINITY) {
-                return POSITIVE_INFINITY
+                POSITIVE_INFINITY
             } else if (r.toDouble() == Double.NEGATIVE_INFINITY) {
-                return NEGATIVE_INFINITY
+                NEGATIVE_INFINITY
             } else {
-                return Angle(accuracy, r.toDouble(), radiansToDegrees(r.toDouble()))
+                Angle(accuracy, r.toDouble(), radiansToDegrees(r.toDouble()))
             }
         }
 
@@ -252,14 +249,14 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
          */
         fun fromDegrees(d: Number, m: Number = 0.0, s: Number = 0.0): Angle {
             val degrees = d.toDouble() + (m.toDouble() + s.toDouble() / 60) / 60
-            if (degrees.isNaN()) {
-                return NaN
+            return if (degrees.isNaN()) {
+                NaN
             } else if (degrees == Double.POSITIVE_INFINITY) {
-                return POSITIVE_INFINITY
+                POSITIVE_INFINITY
             } else if (degrees == Double.NEGATIVE_INFINITY) {
-                return NEGATIVE_INFINITY
+                NEGATIVE_INFINITY
             } else {
-                return Angle(Accuracy.DEGREES, degreesToRadians(degrees), degrees)
+                Angle(Accuracy.DEGREES, degreesToRadians(degrees), degrees)
             }
         }
     }
