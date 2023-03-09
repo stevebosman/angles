@@ -13,7 +13,7 @@ repositories {
     mavenCentral()
     maven {
         name = "GitHubPackages"
-        url = uri("https://maven.pkg.github.com/stevebosman/is-close")
+        url = uri("https://maven.pkg.github.com/stevebosman/is-close-kt")
         credentials {
             username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
             password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
@@ -22,7 +22,7 @@ repositories {
 }
 
 dependencies {
-    implementation("uk.co.stevebosman:is-close:0.0.4")
+    implementation("uk.co.stevebosman:is-close:0.0.5")
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.2")
 }
@@ -36,14 +36,14 @@ tasks.test {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "11"
 }
 
 publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/stevebosman/is-close-kt")
+            url = uri("https://maven.pkg.github.com/stevebosman/angles")
             credentials {
                 username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
                 password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
