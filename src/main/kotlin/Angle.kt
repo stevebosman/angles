@@ -1,6 +1,6 @@
 package uk.co.stevebosman.angles
 
-import uk.co.stevebosman.close.isClose
+import uk.co.stevebosman.difference.isClose
 import kotlin.math.PI
 
 /**

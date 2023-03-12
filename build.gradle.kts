@@ -13,7 +13,7 @@ repositories {
     mavenCentral()
     maven {
         name = "GitHubPackages"
-        url = uri("https://maven.pkg.github.com/stevebosman/is-close-kt")
+        url = uri("https://maven.pkg.github.com/stevebosman/difference")
         credentials {
             username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
             password = project.findProperty("gpr.key") as String? ?: System.getenv("PAT")
@@ -22,7 +22,7 @@ repositories {
 }
 
 dependencies {
-    implementation("uk.co.stevebosman:is-close:0.0.5")
+    implementation("uk.co.stevebosman:difference:0.0.6")
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.2")
 }
@@ -56,3 +56,4 @@ publishing {
         }
     }
 }
+
