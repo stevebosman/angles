@@ -2,7 +2,11 @@ package uk.co.stevebosman.angles
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import uk.co.stevebosman.angles.Angle.Companion.ONE_TURN_RADIANS
+import java.util.stream.Stream
 import kotlin.math.PI
 
 internal class AngleTest {
@@ -252,39 +256,41 @@ internal class AngleTest {
         assertEquals(180.0, test.degrees)
     }
 
+    @ParameterizedTest
+    @MethodSource("provideValuesForIsEquivalentTo")
+    fun isEquivalentTo(expected: Boolean, angle1: Angle, angle2: Angle) {
+        assertIsEquivalentTo(expected, angle1, angle2)
+    }
+
     @Test
-    fun isEquivalentTo() {
-        val nanDegrees = Angle.fromDegrees(Double.NaN)
-        val nanRadians = Angle.fromRadians(Double.NaN)
+    fun isEquivalentToPositiveInfinity() {
         val infinityDegrees = Angle.fromDegrees(Double.POSITIVE_INFINITY)
         val infinityRadians = Angle.fromRadians(Double.POSITIVE_INFINITY)
+        @Suppress("KotlinConstantConditions")
+        assertIsEquivalentTo(Double.POSITIVE_INFINITY == Double.POSITIVE_INFINITY, infinityRadians, infinityDegrees)
+    }
+
+    @Test
+    fun isEquivalentToNegativeInfinity() {
         val negativeInfinityDegrees = Angle.fromDegrees(Double.NEGATIVE_INFINITY)
         val negativeInfinityRadians = Angle.fromRadians(Double.NEGATIVE_INFINITY)
-        for (i in 1..20) {
-            val degrees1 = Angle.fromDegrees(Angle.ONE_TURN_DEGREES / i.toDouble())
-            val radians1 = Angle.fromRadians(ONE_TURN_RADIANS / i.toDouble())
-            val degrees2 = Angle.fromDegrees(Angle.ONE_TURN_DEGREES * (i+1)  / i.toDouble())
-            val radians2 = Angle.fromRadians (ONE_TURN_RADIANS * (-i+1) / i.toDouble())
-            assertIsEquivalentTo(true, radians1, degrees1)
-            assertIsEquivalentTo(true, radians1, degrees2)
-            assertIsEquivalentTo(true, radians1, radians2)
-            assertIsEquivalentTo(true, degrees1, radians1)
-            assertIsEquivalentTo(true, degrees1, degrees2)
-            assertIsEquivalentTo(true, degrees1, radians2)
-            assertIsEquivalentTo(false, degrees1, infinityDegrees)
-            assertIsEquivalentTo(false, degrees1, infinityRadians)
-            assertIsEquivalentTo(false, degrees1, negativeInfinityDegrees)
-            assertIsEquivalentTo(false, degrees1, negativeInfinityRadians)
-            assertIsEquivalentTo(false, degrees1, nanDegrees)
-            assertIsEquivalentTo(false, degrees1, nanRadians)
-        }
-        assertIsEquivalentTo(Double.POSITIVE_INFINITY == Double.POSITIVE_INFINITY, infinityRadians, infinityDegrees)
-        assertIsEquivalentTo(Double.NEGATIVE_INFINITY == Double.NEGATIVE_INFINITY, negativeInfinityDegrees, negativeInfinityRadians)
-        @Suppress("ConvertNaNEquality")
+        @Suppress("KotlinConstantConditions")
+        assertIsEquivalentTo(
+            Double.NEGATIVE_INFINITY == Double.NEGATIVE_INFINITY,
+            negativeInfinityDegrees,
+            negativeInfinityRadians
+        )
+    }
+
+    @Test
+    fun isEquivalentToNaN() {
+        val nanDegrees = Angle.fromDegrees(Double.NaN)
+        val nanRadians = Angle.fromRadians(Double.NaN)
+        @Suppress("KotlinConstantConditions", "ConvertNaNEquality")
         assertIsEquivalentTo(Double.NaN == Double.NaN, nanDegrees, nanRadians)
     }
 
-    private fun assertIsEquivalentTo(expected:Boolean, angle1: Angle, angle2: Angle) {
+    private fun assertIsEquivalentTo(expected: Boolean, angle1: Angle, angle2: Angle) {
         println("Checking $angle1 isEquivalentTo $angle2")
         if (expected) {
             assertTrue(angle1.isEquivalentTo(angle2, 0.0, 3e-14), "expected $angle1 to be equivalent to $angle2")
@@ -295,47 +301,66 @@ internal class AngleTest {
         }
     }
 
+
     @Test
-    fun isCloseTo() {
-        val nanDegrees = Angle.fromDegrees(Double.NaN)
-        val nanRadians = Angle.fromRadians(Double.NaN)
+    fun isExactlyEquivalentTo() {
+        val angle1 = Angle.fromDegrees(0)
+        val angle2 = Angle.fromDegrees(360)
+        assertTrue(angle1.isEquivalentTo(angle2), "expected $angle1 to be equivalent to $angle2")
+        assertTrue(angle2.isEquivalentTo(angle1), "expected $angle2 to be equivalent to $angle1")
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideValuesForIsCloseTo")
+    fun isCloseTo(expected: Boolean, angle1: Angle, angle2: Angle) {
+        assertIsCloseTo(expected, angle1, angle2)
+    }
+
+    @Test
+    fun isCloseToPositiveInfinity() {
         val infinityDegrees = Angle.fromDegrees(Double.POSITIVE_INFINITY)
         val infinityRadians = Angle.fromRadians(Double.POSITIVE_INFINITY)
+        @Suppress("KotlinConstantConditions")
+        assertIsCloseTo(Double.POSITIVE_INFINITY == Double.POSITIVE_INFINITY, infinityRadians, infinityDegrees)
+    }
+
+    @Test
+    fun isCloseToNegativeInfinity() {
         val negativeInfinityDegrees = Angle.fromDegrees(Double.NEGATIVE_INFINITY)
         val negativeInfinityRadians = Angle.fromRadians(Double.NEGATIVE_INFINITY)
-        for (i in 1..20) {
-            val degrees1 = Angle.fromDegrees(Angle.ONE_TURN_DEGREES / i.toDouble())
-            val radians1 = Angle.fromRadians(ONE_TURN_RADIANS / i.toDouble())
-            val degrees2 = Angle.fromDegrees(Angle.ONE_TURN_DEGREES * (i+1)  / i.toDouble())
-            val radians2 = Angle.fromRadians (ONE_TURN_RADIANS * (-i+1) / i.toDouble())
-            assertIsCloseTo(true, radians1, degrees1)
-            assertIsCloseTo(false, radians1, degrees2)
-            assertIsCloseTo(false, radians1, radians2)
-            assertIsCloseTo(true, degrees1, radians1)
-            assertIsCloseTo(false, degrees1, degrees2)
-            assertIsCloseTo(false, degrees1, radians2)
-            assertIsCloseTo(false, degrees1, infinityDegrees)
-            assertIsCloseTo(false, degrees1, infinityRadians)
-            assertIsCloseTo(false, degrees1, negativeInfinityDegrees)
-            assertIsCloseTo(false, degrees1, negativeInfinityRadians)
-            assertIsCloseTo(false, degrees1, nanDegrees)
-            assertIsCloseTo(false, degrees1, nanRadians)
-        }
-        assertIsCloseTo(Double.POSITIVE_INFINITY == Double.POSITIVE_INFINITY, infinityRadians, infinityDegrees)
-        assertIsCloseTo(Double.NEGATIVE_INFINITY == Double.NEGATIVE_INFINITY, negativeInfinityDegrees, negativeInfinityRadians)
-        @Suppress("ConvertNaNEquality")
+        @Suppress("KotlinConstantConditions")
+        assertIsCloseTo(
+            Double.NEGATIVE_INFINITY == Double.NEGATIVE_INFINITY,
+            negativeInfinityDegrees,
+            negativeInfinityRadians
+        )
+    }
+
+    @Test
+    fun isCloseToNaN() {
+        val nanDegrees = Angle.fromDegrees(Double.NaN)
+        val nanRadians = Angle.fromRadians(Double.NaN)
+        @Suppress("KotlinConstantConditions", "ConvertNaNEquality")
         assertIsCloseTo(Double.NaN == Double.NaN, nanDegrees, nanRadians)
     }
 
-    private fun assertIsCloseTo(expected:Boolean, angle1: Angle, angle2: Angle) {
+    private fun assertIsCloseTo(expected: Boolean, angle1: Angle, angle2: Angle) {
         println("Checking $angle1 isCloseTo $angle2")
         if (expected) {
-            assertTrue(angle1.isCloseTo(angle2, 0.0, 3e-14), "expected $angle1 to be equivalent to $angle2")
-            assertTrue(angle1.isCloseTo(angle2, 3e-14, 0.0), "expected $angle1 to be equivalent to $angle2")
+            assertTrue(angle1.isCloseTo(angle2, 0.0, 3e-14), "expected $angle1 to be close to $angle2")
+            assertTrue(angle1.isCloseTo(angle2, 3e-14, 0.0), "expected $angle1 to be close to $angle2")
         } else {
-            assertFalse(angle1.isCloseTo(angle2, 0.0, 3e-14), "expected $angle1 to not be equivalent to $angle2")
-            assertFalse(angle1.isCloseTo(angle2, 3e-14, 0.0), "expected $angle1 to not be equivalent to $angle2")
+            assertFalse(angle1.isCloseTo(angle2, 0.0, 3e-14), "expected $angle1 to not be close to $angle2")
+            assertFalse(angle1.isCloseTo(angle2, 3e-14, 0.0), "expected $angle1 to not be close to $angle2")
         }
+    }
+
+    @Test
+    fun isExactlyCloseTo() {
+        val angle1 = Angle.fromDegrees(0)
+        val angle2 = Angle.fromRadians(0)
+        assertTrue(angle1.isCloseTo(angle2), "expected $angle1 to be close to $angle2")
+        assertTrue(angle2.isCloseTo(angle1), "expected $angle2 to be close to $angle1")
     }
 
     @Test
@@ -360,5 +385,69 @@ internal class AngleTest {
         assertTrue(Angle.fromDegrees(Double.POSITIVE_INFINITY).isInfinite())
         assertTrue(Angle.fromDegrees(Double.NEGATIVE_INFINITY).isInfinite())
         assertFalse(Angle.fromDegrees(12.0).isInfinite())
+    }
+
+    companion object {
+        @JvmStatic
+        fun provideValuesForIsCloseTo(): Stream<Arguments> {
+            val nanDegrees = Angle.fromDegrees(Double.NaN)
+            val nanRadians = Angle.fromRadians(Double.NaN)
+            val infinityDegrees = Angle.fromDegrees(Double.POSITIVE_INFINITY)
+            val infinityRadians = Angle.fromRadians(Double.POSITIVE_INFINITY)
+            val negativeInfinityDegrees = Angle.fromDegrees(Double.NEGATIVE_INFINITY)
+            val negativeInfinityRadians = Angle.fromRadians(Double.NEGATIVE_INFINITY)
+
+            return (1..20).flatMap {
+                val degrees1 = Angle.fromDegrees(Angle.ONE_TURN_DEGREES / it.toDouble())
+                val radians1 = Angle.fromRadians(ONE_TURN_RADIANS / it.toDouble())
+                val degrees2 = Angle.fromDegrees(Angle.ONE_TURN_DEGREES * (it + 1) / it.toDouble())
+                val radians2 = Angle.fromRadians(ONE_TURN_RADIANS * (-it + 1) / it.toDouble())
+                listOf(
+                    Arguments.of(true, radians1, degrees1),
+                    Arguments.of(false, radians1, degrees2),
+                    Arguments.of(false, radians1, radians2),
+                    Arguments.of(true, degrees1, radians1),
+                    Arguments.of(false, degrees1, degrees2),
+                    Arguments.of(false, degrees1, radians2),
+                    Arguments.of(false, degrees1, infinityDegrees),
+                    Arguments.of(false, degrees1, infinityRadians),
+                    Arguments.of(false, degrees1, negativeInfinityDegrees),
+                    Arguments.of(false, degrees1, negativeInfinityRadians),
+                    Arguments.of(false, degrees1, nanDegrees),
+                    Arguments.of(false, degrees1, nanRadians)
+                )
+            }.stream()
+        }
+
+        @JvmStatic
+        fun provideValuesForIsEquivalentTo(): Stream<Arguments> {
+            val nanDegrees = Angle.fromDegrees(Double.NaN)
+            val nanRadians = Angle.fromRadians(Double.NaN)
+            val infinityDegrees = Angle.fromDegrees(Double.POSITIVE_INFINITY)
+            val infinityRadians = Angle.fromRadians(Double.POSITIVE_INFINITY)
+            val negativeInfinityDegrees = Angle.fromDegrees(Double.NEGATIVE_INFINITY)
+            val negativeInfinityRadians = Angle.fromRadians(Double.NEGATIVE_INFINITY)
+
+            return (1..20).flatMap {
+                val degrees1 = Angle.fromDegrees(Angle.ONE_TURN_DEGREES / it.toDouble())
+                val radians1 = Angle.fromRadians(ONE_TURN_RADIANS / it.toDouble())
+                val degrees2 = Angle.fromDegrees(Angle.ONE_TURN_DEGREES * (it + 1) / it.toDouble())
+                val radians2 = Angle.fromRadians(ONE_TURN_RADIANS * (-it + 1) / it.toDouble())
+                listOf(
+                    Arguments.of(true, radians1, degrees1),
+                    Arguments.of(true, radians1, degrees2),
+                    Arguments.of(true, radians1, radians2),
+                    Arguments.of(true, degrees1, radians1),
+                    Arguments.of(true, degrees1, degrees2),
+                    Arguments.of(true, degrees1, radians2),
+                    Arguments.of(false, degrees1, infinityDegrees),
+                    Arguments.of(false, degrees1, infinityRadians),
+                    Arguments.of(false, degrees1, negativeInfinityDegrees),
+                    Arguments.of(false, degrees1, negativeInfinityRadians),
+                    Arguments.of(false, degrees1, nanDegrees),
+                    Arguments.of(false, degrees1, nanRadians)
+                )
+            }.stream()
+        }
     }
 }

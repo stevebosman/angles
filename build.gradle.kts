@@ -7,13 +7,13 @@ plugins {
 }
 
 group = "uk.co.stevebosman"
-version = "0.0.6"
+version = "0.1.0"
 
 repositories {
     mavenCentral()
     maven {
         name = "GitHubPackages"
-        url = uri("https://maven.pkg.github.com/stevebosman/difference")
+        url = uri("https://maven.pkg.github.com/stevebosman/angles")
         credentials {
             username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
             password = project.findProperty("gpr.key") as String? ?: System.getenv("PAT")
@@ -22,7 +22,7 @@ repositories {
 }
 
 dependencies {
-    implementation("uk.co.stevebosman:difference:0.0.6")
+    implementation("uk.co.stevebosman:difference:0.1.0")
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.2")
 }
@@ -45,8 +45,8 @@ publishing {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/stevebosman/angles")
             credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
-                password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
             }
         }
     }
