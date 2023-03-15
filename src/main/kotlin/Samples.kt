@@ -2,17 +2,17 @@ package uk.co.stevebosman.angles
 
 import kotlin.math.PI
 
-internal fun simplifyExample1() {
+internal fun simplifyExample1(): Angle {
     // Simplifies to 180°
-    Angle.fromDegrees(540).simplify()
+    return Angle.fromDegrees(540).simplify()
 }
 
-internal fun simplifyExample2() {
-    // Simplifies to 180°
-    Angle.fromDegrees(540).simplify(-180, false)
+internal fun simplifyExample2(): Angle {
+    // Simplifies to 90°
+    return Angle.fromDegrees(450).simplify(-180, false)
 }
 
-internal fun simplifyExample3() {
+internal fun simplifyExample3(): Angle {
     // Simplifies to -π radians
-    Angle.fromRadians(3*PI).simplify(-PI, true)
+    return Angle.fromRadians(3*PI).simplify(-PI, true)
 }

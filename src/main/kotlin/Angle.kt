@@ -177,6 +177,27 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
         return this.simplify().isCloseTo(a2.simplify(), relativeTolerance, absoluteTolerance)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Angle
+
+        if (accuracy != other.accuracy) return false
+        if (radians != other.radians) return false
+        if (degrees != other.degrees) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = accuracy.hashCode()
+        result = 31 * result + radians.hashCode()
+        result = 31 * result + degrees.hashCode()
+        return result
+    }
+
+
     companion object {
         const val ONE_TURN_RADIANS = 2 * PI
         const val ONE_TURN_DEGREES = 360
@@ -187,8 +208,8 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
         private fun simplify(
             v: Double,
             oneTurn: Number,
-            min: Number = 0,
-            minInclusive: Boolean = true
+            min: Number,
+            minInclusive: Boolean
         ): Double {
             val minD = min.toDouble()
             val oneTurnD = oneTurn.toDouble()
