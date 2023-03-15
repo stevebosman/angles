@@ -187,8 +187,8 @@ class Angle private constructor(val accuracy: Accuracy, val radians: Double, val
         private fun simplify(
             v: Double,
             oneTurn: Number,
-            min: Number = 0,
-            minInclusive: Boolean = true
+            min: Number,
+            minInclusive: Boolean
         ): Double {
             val minD = min.toDouble()
             val oneTurnD = oneTurn.toDouble()

@@ -256,7 +256,7 @@ internal class AngleTest {
         assertEquals(180.0, test.degrees)
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "isEquivalentTo returns {0} comparing {1} to {2}")
     @MethodSource("provideValuesForIsEquivalentTo")
     fun isEquivalentTo(expected: Boolean, angle1: Angle, angle2: Angle) {
         assertIsEquivalentTo(expected, angle1, angle2)
@@ -310,7 +310,7 @@ internal class AngleTest {
         assertTrue(angle2.isEquivalentTo(angle1), "expected $angle2 to be equivalent to $angle1")
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "isCloseTo returns {0} comparing {1} to {2}")
     @MethodSource("provideValuesForIsCloseTo")
     fun isCloseTo(expected: Boolean, angle1: Angle, angle2: Angle) {
         assertIsCloseTo(expected, angle1, angle2)
