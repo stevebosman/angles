@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import org.junit.jupiter.params.provider.ValueSource
 import uk.co.stevebosman.angles.Angle.Companion.ONE_TURN_RADIANS
 import java.util.stream.Stream
 import kotlin.math.PI
@@ -256,7 +257,7 @@ internal class AngleTest {
         assertEquals(180.0, test.degrees)
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "isEquivalentTo returns {0} comparing {1} to {2}")
     @MethodSource("provideValuesForIsEquivalentTo")
     fun isEquivalentTo(expected: Boolean, angle1: Angle, angle2: Angle) {
         assertIsEquivalentTo(expected, angle1, angle2)
@@ -310,7 +311,7 @@ internal class AngleTest {
         assertTrue(angle2.isEquivalentTo(angle1), "expected $angle2 to be equivalent to $angle1")
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "isCloseTo returns {0} comparing {1} to {2}")
     @MethodSource("provideValuesForIsCloseTo")
     fun isCloseTo(expected: Boolean, angle1: Angle, angle2: Angle) {
         assertIsCloseTo(expected, angle1, angle2)
@@ -385,6 +386,37 @@ internal class AngleTest {
         assertTrue(Angle.fromDegrees(Double.POSITIVE_INFINITY).isInfinite())
         assertTrue(Angle.fromDegrees(Double.NEGATIVE_INFINITY).isInfinite())
         assertFalse(Angle.fromDegrees(12.0).isInfinite())
+    }
+
+    @ParameterizedTest
+    @ValueSource(doubles = [10.0, 180.0, 360.0] )
+    fun equalityDegreesTest(angle: Double) {
+        val testAngle1: Angle = Angle.fromDegrees(angle)
+        val testAngle2: Angle = Angle.fromDegrees(angle)
+        assertEquals(testAngle1, testAngle2)
+        assertEquals(testAngle1.hashCode(), testAngle2.hashCode())
+        assertNotSame(testAngle1, testAngle2)
+    }
+
+    @ParameterizedTest
+    @ValueSource(doubles = [10.0, 180.0, 360.0] )
+    fun equalityRadiansTest(angle: Double) {
+        val testAngle1: Angle = Angle.fromRadians(angle)
+        val testAngle2: Angle = Angle.fromRadians(angle)
+        assertEquals(testAngle1, testAngle2)
+        assertEquals(testAngle1.hashCode(), testAngle2.hashCode())
+        assertNotSame(testAngle1, testAngle2)
+    }
+
+    @ParameterizedTest
+    @ValueSource(doubles = [10.0, 180.0, 360.0] )
+    fun equalityMixedTest(angle: Double) {
+        val subtractMe: Angle = Angle.fromDegrees(10.0)
+        val testAngle1: Angle = Angle.fromRadians(angle).minus(subtractMe)
+        val testAngle2: Angle = Angle.fromRadians(angle).minus(subtractMe)
+        assertEquals(testAngle1, testAngle2)
+        assertEquals(testAngle1.hashCode(), testAngle2.hashCode())
+        assertNotSame(testAngle1, testAngle2)
     }
 
     companion object {
